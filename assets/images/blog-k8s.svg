@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" width="600" height="300">
+  <defs>
+    <linearGradient id="k8sGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00A86B" />
+      <stop offset="100%" style="stop-color:#008C59" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="600" height="300" fill="#326CE5" />
+  
+  <!-- Kubernetes logo (simplified) -->
+  <g transform="translate(300, 120) scale(1.5)">
+    <path d="M0,-50 L43.3,-25 L43.3,25 L0,50 L-43.3,25 L-43.3,-25 Z" fill="#FFFFFF" opacity="0.2" />
+    <path d="M0,-40 L34.6,-20 L34.6,20 L0,40 L-34.6,20 L-34.6,-20 Z" fill="#FFFFFF" opacity="0.3" />
+    <circle cx="0" cy="0" r="10" fill="#FFFFFF" />
+    <path d="M0,0 L-15,-26 M0,0 L15,-26 M0,0 L30,0 M0,0 L15,26 M0,0 L-15,26 M0,0 L-30,0" stroke="#FFFFFF" stroke-width="3" />
+  </g>
+  
+  <!-- Lock symbol -->
+  <g transform="translate(300, 120)">
+    <rect x="-20" y="-10" width="40" height="30" rx="5" fill="url(#k8sGradient)" />
+    <rect x="-15" y="-25" width="30" height="20" rx="10" fill="none" stroke="url(#k8sGradient)" stroke-width="5" />
+    <circle cx="0" cy="5" r="5" fill="#FFFFFF" />
+    <line x1="0" y1="5" x2="0" y2="15" stroke="#FFFFFF" stroke-width="2" />
+  </g>
+  
+  <!-- Shield outline -->
+  <path d="M300,50 L380,80 C380,150 360,200 300,240 C240,200 220,150 220,80 Z" fill="none" stroke="#FFFFFF" stroke-width="3" opacity="0.5" />
+  
+  <!-- Kubernetes objects with protection -->
+  <g transform="translate(200, 200)">
+    <rect x="-30" y="-15" width="60" height="30" rx="5" fill="#FFFFFF" opacity="0.6" />
+    <text x="0" y="5" font-family="Arial" font-size="12" text-anchor="middle" fill="#326CE5">Pod</text>
+    <circle cx="0" cy="-30" r="20" fill="url(#k8sGradient)" opacity="0.3" />
+  </g>
+  
+  <g transform="translate(300, 200)">
+    <rect x="-40" y="-15" width="80" height="30" rx="5" fill="#FFFFFF" opacity="0.6" />
+    <text x="0" y="5" font-family="Arial" font-size="12" text-anchor="middle" fill="#326CE5">Service</text>
+    <circle cx="0" cy="-30" r="20" fill="url(#k8sGradient)" opacity="0.3" />
+  </g>
+  
+  <g transform="translate(400, 200)">
+    <rect x="-50" y="-15" width="100" height="30" rx="5" fill="#FFFFFF" opacity="0.6" />
+    <text x="0" y="5" font-family="Arial" font-size="12" text-anchor="middle" fill="#326CE5">Deployment</text>
+    <circle cx="0" cy="-30" r="20" fill="url(#k8sGradient)" opacity="0.3" />
+  </g>
+  
+  <!-- Title -->
+  <text x="300" y="240" font-family="Arial" font-size="24" font-weight="bold" text-anchor="middle" fill="#FFFFFF">K8s Object Locker</text>
+  <text x="300" y="270" font-family="Arial" font-size="18" text-anchor="middle" fill="#FFFFFF">Disaster Prevention Tool</text>
+</svg>

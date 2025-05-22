@@ -1,2 +1,2 @@
-memory-bank/*
-.clinerules/*
+# Cline-specific directories
+.clinerules/

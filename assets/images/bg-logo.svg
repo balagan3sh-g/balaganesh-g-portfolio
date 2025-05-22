@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00A86B" />
+      <stop offset="100%" style="stop-color:#008C59" />
+    </linearGradient>
+  </defs>
+  <g transform="translate(10, 10)">
+    <!-- Main BG shape -->
+    <path d="M30,0 L150,0 C165,0 180,15 180,30 L180,150 C180,165 165,180 150,180 L30,180 C15,180 0,165 0,150 L0,30 C0,15 15,0 30,0 Z" fill="url(#bgGradient)" />
+    
+    <!-- B shape -->
+    <path d="M50,40 L100,40 C115,40 130,55 130,70 C130,85 115,100 100,100 L50,100 Z" fill="#FFFFFF" />
+    <path d="M50,100 L110,100 C125,100 140,115 140,130 C140,145 125,160 110,160 L50,160 Z" fill="#FFFFFF" />
+    <path d="M50,40 L50,160 L80,160 L80,100 L100,100 C115,100 130,85 130,70 C130,55 115,40 100,40 Z" fill="#FFFFFF" />
+    
+    <!-- G shape -->
+    <path d="M90,40 L140,40 C155,40 170,55 170,70 L170,130 C170,145 155,160 140,160 L90,160 C75,160 60,145 60,130 L60,70 C60,55 75,40 90,40 Z" fill="#FFFFFF" />
+    <path d="M90,60 L140,60 C145,60 150,65 150,70 L150,130 C150,135 145,140 140,140 L90,140 C85,140 80,135 80,130 L80,70 C80,65 85,60 90,60 Z" fill="url(#bgGradient)" />
+    <path d="M150,100 L120,100 L120,120 L150,120 Z" fill="#FFFFFF" />
+  </g>
+</svg>

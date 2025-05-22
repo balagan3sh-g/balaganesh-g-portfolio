@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" width="1200" height="600">
+  <defs>
+    <linearGradient id="heroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#004D31" />
+      <stop offset="100%" style="stop-color:#00A86B" />
+    </linearGradient>
+    <pattern id="pattern" width="50" height="50" patternUnits="userSpaceOnUse">
+      <circle cx="25" cy="25" r="1" fill="#FFFFFF" opacity="0.3" />
+    </pattern>
+  </defs>
+  <rect width="1200" height="600" fill="url(#heroGradient)" />
+  <rect width="1200" height="600" fill="url(#pattern)" />
+  
+  <!-- Abstract shapes -->
+  <circle cx="200" cy="150" r="100" fill="#FFFFFF" opacity="0.05" />
+  <circle cx="1000" cy="450" r="150" fill="#FFFFFF" opacity="0.05" />
+  <path d="M0,400 Q300,300 600,400 T1200,300" stroke="#FFFFFF" stroke-width="2" fill="none" opacity="0.1" />
+  <path d="M0,450 Q300,350 600,450 T1200,350" stroke="#FFFFFF" stroke-width="2" fill="none" opacity="0.1" />
+</svg>

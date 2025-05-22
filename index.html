@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balaganesh G - Portfolio</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body data-theme="light">
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <img src="assets/images/bg-logo.png" alt="BG Logo" id="logo">
+                <h1>Balaganesh G</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#professional">Professional</a></li>
+                    <li><a href="#personal">Personal</a></li>
+                    <li><a href="#blog">Blog</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <button id="theme-toggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h2>Site Reliability Engineer</h2>
+                <p>Building reliable, scalable systems and solving complex problems</p>
+                <div class="hero-buttons">
+                    <a href="#professional" class="btn primary">View My Work</a>
+                    <a href="#contact" class="btn secondary">Get In Touch</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="container">
+            <h2 class="section-title">About Me</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>I'm a Site Reliability Engineer with experience in cloud infrastructure, Kubernetes, and development in Go and Python. I'm passionate about building reliable systems and solving complex problems.</p>
+                    <p>Beyond my professional work, I enjoy solving Rubik's puzzles, riding my Hero Maverick 440, trekking, and listening to music with my IEMs for crystal clear sound.</p>
+                </div>
+                <div class="about-image">
+                    <img src="assets/images/profile.svg" alt="Balaganesh G">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Professional Section -->
+    <section id="professional">
+        <div class="container">
+            <h2 class="section-title">Professional</h2>
+            
+            <!-- Skills -->
+            <div class="skills">
+                <h3>Skills</h3>
+                <div class="skill-categories">
+                    <div class="skill-category">
+                        <h4>Programming</h4>
+                        <ul>
+                            <li>Go</li>
+                            <li>Python</li>
+                            <li>C</li>
+                        </ul>
+                    </div>
+                    <div class="skill-category">
+                        <h4>Cloud & Infrastructure</h4>
+                        <ul>
+                            <li>AWS (VPC, EKS, EC2, RDS, ELB, KMS, Lambda)</li>
+                            <li>Kubernetes (Helm, Kustomize, Istio)</li>
+                            <li>Docker</li>
+                        </ul>
+                    </div>
+                    <div class="skill-category">
+                        <h4>Monitoring & Logging</h4>
+                        <ul>
+                            <li>Victoria Metrics</li>
+                            <li>Prometheus Operator</li>
+                            <li>Grafana</li>
+                            <li>FluentD</li>
+                            <li>Vector</li>
+                        </ul>
+                    </div>
+                    <div class="skill-category">
+                        <h4>Version Control & CI/CD</h4>
+                        <ul>
+                            <li>Git</li>
+                            <li>GitHub</li>
+                            <li>Bitbucket</li>
+                            <li>Jenkins</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Projects -->
+            <div class="projects">
+                <h3>Projects</h3>
+                <div class="project-cards">
+                    <div class="project-card">
+                        <h4>Employee and Access Management Tool</h4>
+                        <p>Designed APIs for Google SSO integration, user management, Grafana, Jira, and internal dashboards. Streamlined onboarding and offboarding processes and automated access management for 1300+ employees.</p>
+                        <div class="project-tech">
+                            <span>Go</span>
+                            <span>APIs</span>
+                            <span>SSO</span>
+                        </div>
+                    </div>
+                    <div class="project-card">
+                        <h4>Component Testing Automation</h4>
+                        <p>Created backend workflows to test and deploy open-source components in AWS and Kubernetes. Designed an inventory system to track applications and infrastructure for 10+ stacks.</p>
+                        <div class="project-tech">
+                            <span>Python</span>
+                            <span>AWS</span>
+                            <span>Kubernetes</span>
+                        </div>
+                    </div>
+                    <div class="project-card">
+                        <h4>UPI Stack Management</h4>
+                        <p>Collaborated with cross-functional teams to deploy and maintain high-performance software systems. Simplified process for high-traffic merchant on-boarding and enabled flawless scaling to handle 2500+ Transactions per second. Reduced cost for AWS cloud by $240,000 yearly.</p>
+                        <div class="project-tech">
+                            <span>AWS</span>
+                            <span>Scaling</span>
+                            <span>Cost Optimization</span>
+                        </div>
+                    </div>
+                    <div class="project-card">
+                        <h4>K8s Object Locker</h4>
+                        <p>Researching and designing a locking mechanism to prevent unauthorized modifications of crucial Kubernetes objects.</p>
+                        <div class="project-tech">
+                            <span>Go</span>
+                            <span>Kubernetes</span>
+                            <span>Security</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Experience -->
+            <div class="experience">
+                <h3>Experience</h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-date">
+                            <span>June 2021 - Present</span>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Site Reliability Engineer</h4>
+                            <h5>Juspay Technologies, Bengaluru</h5>
+                            <ul>
+                                <li>Led Development of Employee and Access Management Tool</li>
+                                <li>Contributed to Component Testing Automation and Inventory Tool</li>
+                                <li>Stack owner for multiple "UPI stack"</li>
+                                <li>Working on K8s Object Locker</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">
+                            <span>Oct 2020 - June 2021</span>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Site Reliability Engineer Intern</h4>
+                            <h5>Juspay Technologies, Bengaluru</h5>
+                            <ul>
+                                <li>Learned about Kubernetes, Istio, Envoy, Prometheus, Grafana</li>
+                                <li>Worked with SecOps team on setting up JAMF</li>
+                                <li>Wrote automation using python scripts</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Education -->
+            <div class="education">
+                <h3>Education</h3>
+                <div class="education-item">
+                    <h4>B.E in Electrical and Electronics Engineering</h4>
+                    <h5>Bannari Amman Institute of Technology</h5>
+                    <p>2017 - 2021</p>
+                    <p>CGPA: 8.76/10.0</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Personal Section with Tabs -->
+    <section id="personal">
+        <div class="container">
+            <h2 class="section-title">Personal</h2>
+            
+            <div class="tabs-container">
+                <!-- Tab Navigation -->
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="puzzles">Puzzles</button>
+                    <button class="tab-btn" data-tab="biking">Biking</button>
+                    <button class="tab-btn" data-tab="trekking">Trekking</button>
+                    <button class="tab-btn" data-tab="music">Music</button>
+                </div>
+                
+                <!-- Tab Content -->
+                <div class="tab-content">
+                    <!-- Puzzles Tab -->
+                    <div class="tab-pane active" id="puzzles">
+                        <h3>Rubik's Puzzles</h3>
+                        <div class="tab-content-inner">
+                            <div class="tab-image">
+                                <img src="assets/images/puzzels.jpg" alt="Rubik's Puzzles">
+                            </div>
+                            <div class="tab-text">
+                                <p>I've always been fascinated by Rubik's puzzles and the problem-solving skills they require. What started as a simple curiosity has grown into a hobby where I challenge myself with increasingly complex puzzles.</p>
+                                <p>I enjoy the methodical approach needed to solve these puzzles, breaking down a seemingly impossible task into manageable algorithms and patterns.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Biking Tab -->
+                    <div class="tab-pane" id="biking">
+                        <h3>Biking</h3>
+                        <div class="tab-content-inner">
+                            <div class="tab-image">
+                                <img src="assets/images/Hero-Mavrick-440-8.png" alt="Hero Maverick 440">
+                            </div>
+                            <div class="tab-text">
+                                <p>My Hero Maverick 440 is more than just a mode of transportation—it's a passion. The freedom of the open road and the thrill of exploring new places makes biking one of my favorite activities.</p>
+                                <p>Whether it's a short ride around the city or a longer journey to discover new landscapes, biking gives me a sense of adventure and connection with the world around me.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Trekking Tab -->
+                    <div class="tab-pane" id="trekking">
+                        <h3>Trekking</h3>
+                        <div class="tab-content-inner">
+                            <div class="tab-image">
+                                <img src="assets/images/trekking.jpg" alt="Trekking">
+                            </div>
+                            <div class="tab-text">
+                                <p>Trekking allows me to disconnect from technology and reconnect with nature. The physical challenge combined with breathtaking views makes every trek a memorable experience.</p>
+                                <p>I enjoy exploring trails, discovering hidden viewpoints, and experiencing the peace that comes from being surrounded by nature's beauty.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Music Tab -->
+                    <div class="tab-pane" id="music">
+                        <h3>Music</h3>
+                        <div class="tab-content-inner">
+                            <div class="tab-image">
+                                <img src="assets/images/music.jpg" alt="IEMs and Music">
+                            </div>
+                            <div class="tab-text">
+                                <p>Music is an essential part of my life, and I'm particularly interested in achieving the best possible listening experience. I use IEMs (In-Ear Monitors) to get crystal clear sound quality.</p>
+                                <p>I appreciate the technical aspects of audio equipment as much as the music itself, always looking for ways to enhance the listening experience and discover new details in familiar songs.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section id="blog">
+        <div class="container">
+            <h2 class="section-title">Technical Blog</h2>
+            <div class="blog-posts">
+                <div class="blog-post">
+                    <div class="blog-image">
+                        <img src="assets/images/blog-aws.svg" alt="AWS Cost Optimization">
+                    </div>
+                    <div class="blog-content">
+                        <h3>How We Reduced AWS Costs by $240,000 Annually</h3>
+                        <p class="blog-date">April 15, 2023</p>
+                        <p class="blog-excerpt">A deep dive into the strategies and optimizations we implemented to significantly reduce our AWS cloud costs while maintaining performance and reliability.</p>
+                        <a href="#" class="read-more">Read More</a>
+                    </div>
+                </div>
+                <div class="blog-post">
+                    <div class="blog-image">
+                        <img src="assets/images/blog-scaling.svg" alt="Scaling UPI Stack">
+                    </div>
+                    <div class="blog-content">
+                        <h3>Scaling UPI Stack to Handle 2500+ TPS</h3>
+                        <p class="blog-date">March 10, 2023</p>
+                        <p class="blog-excerpt">The technical challenges and solutions involved in scaling our UPI stack to handle more than 2500 transactions per second with high reliability.</p>
+                        <a href="#" class="read-more">Read More</a>
+                    </div>
+                </div>
+                <div class="blog-post">
+                    <div class="blog-image">
+                        <img src="assets/images/blog-k8s.svg" alt="Kubernetes Security">
+                    </div>
+                    <div class="blog-content">
+                        <h3>Designing K8s Object Locker: A Disaster Prevention Tool</h3>
+                        <p class="blog-date">February 5, 2023</p>
+                        <p class="blog-excerpt">An exploration of the design considerations and implementation details of a tool to prevent unauthorized modifications of crucial Kubernetes objects.</p>
+                        <a href="#" class="read-more">Read More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <div class="container">
+            <h2 class="section-title">Get In Touch</h2>
+            <div class="contact-content">
+                <div class="contact-form">
+                    <form>
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn primary">Send Message</button>
+                    </form>
+                    <div id="form-message" class="form-message" style="margin-top: 1rem;"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="assets/images/bg-logo.png" alt="BG Logo" class="footer-logo-img">
+                    <p>Balaganesh G</p>
+                </div>
+                <div class="footer-social">
+                    <a href="https://linkedin.com/in/balaganesh-g" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://github.com/bala-ganesh-g" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Balaganesh G. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/script.js"></script>
+</body>
+</html>
