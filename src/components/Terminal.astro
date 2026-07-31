@@ -15,7 +15,7 @@ import { portfolio } from '../data/portfolio';
   <div class="terminal-body" id="terminal-body">
     <div id="output-stream"></div>
     <div class="input-line" id="input-line">
-      <span class="prompt">guest@sre-portfolio:~$</span>
+      <span class="prompt" id="prompt-text">guest@sre-portfolio:~$</span>
       <input
         type="text"
         id="command-input"
@@ -214,12 +214,6 @@ import { portfolio } from '../data/portfolio';
       bullets: string[];
     }>;
     skills: string[];
-    services: Array<{
-      name: string;
-      status: string;
-      since?: string;
-      detail?: string;
-    }>;
     socials: {
       github: string;
       linkedin: string;
@@ -235,9 +229,89 @@ import { portfolio } from '../data/portfolio';
   const terminal = document.getElementById('terminal')!;
   const terminalBody = document.getElementById('terminal-body')!;
 
-  const PROMPT = 'guest@sre-portfolio:~$';
+  const PROMPT_BASE = 'guest@sre-portfolio';
   let history: string[] = [];
   let historyIndex = -1;
+
+  interface VFSNode {
+    type: 'dir' | 'file';
+    content?: string;
+    children?: Record<string, VFSNode>;
+  }
+
+  function buildVFS(data: PortfolioData): Record<string, VFSNode> {
+    const expText = data.experience
+      .map(
+        (exp) =>
+          `[${exp.company}] - ${exp.title} (${exp.period})\n${exp.bullets.map((b) => `  - ${b}`).join('\n')}`,
+      )
+      .join('\n\n');
+
+    const skillsText = data.skills.join(' · ');
+
+    const linksText = `github:   ${data.socials.github}\nlinkedin: ${data.socials.linkedin}\nemail:    ${data.socials.email}`;
+
+    return {
+      about: {
+        type: 'dir',
+        children: {
+          'bio.txt': {
+            type: 'file',
+            content: `${data.name}\n${data.role}\n\n${data.about}`,
+          },
+        },
+      },
+      experience: {
+        type: 'dir',
+        children: {
+          'juspay.txt': { type: 'file', content: expText },
+        },
+      },
+      skills: {
+        type: 'dir',
+        children: {
+          'stack.txt': { type: 'file', content: skillsText },
+        },
+      },
+      links: {
+        type: 'dir',
+        children: {
+          'contact.txt': { type: 'file', content: linksText },
+        },
+      },
+      'profile.json': {
+        type: 'file',
+        content: JSON.stringify(data, null, 2),
+      },
+      'readme.txt': {
+        type: 'file',
+        content:
+          "Welcome to my terminal portfolio!\n\nType 'help' to see available commands.\nUse 'ls' to browse, 'cd <dir>' to enter directories, 'cat <file>' to read files.",
+      },
+    };
+  }
+
+  const vfs = buildVFS(portfolio);
+  let cwd: string[] = [];
+
+  function getDir(path: string[]): VFSNode | null {
+    let current: VFSNode | undefined = { type: 'dir', children: vfs };
+    for (const part of path) {
+      if (!current?.children?.[part]) return null;
+      current = current.children[part];
+    }
+    return current ?? null;
+  }
+
+  function getPromptString(): string {
+    const path = cwd.length === 0 ? '~' : `~/${cwd.join('/')}`;
+    return `${PROMPT_BASE}:${path}$`;
+  }
+
+  function updatePrompt(): void {
+    const el = document.getElementById('prompt-text');
+    if (el) el.textContent = getPromptString();
+  }
   function scrollToBottom(): void {
     terminalBody.scrollTop = terminalBody.scrollHeight;
   }
@@ -268,7 +342,7 @@ import { portfolio } from '../data/portfolio';
   function appendEcho(cmd: string): void {
     const div = document.createElement('div');
     div.className = 'output-block cmd-echo';
-    div.innerHTML = `<span class="prompt">${PROMPT}</span> <span class="cmd-text">${escapeHtml(cmd)}</span>`;
+    div.innerHTML = `<span class="prompt">${getPromptString()}</span> <span class="cmd-text">${escapeHtml(cmd)}</span>`;
     output.appendChild(div);
     scrollToBottom();
   }
@@ -286,9 +360,11 @@ import { portfolio } from '../data/portfolio';
         ['about', 'who am I?'],
         ['experience', 'work history & achievements'],
         ['skills', 'tech stack I work with'],
-        ['systemctl', 'check service status'],
         ['curl', 'fetch career profile as JSON'],
         ['links', 'where to find me online'],
+        ['ls', 'list files & directories'],
+        ['cd', 'change directory'],
+        ['cat', 'read a file'],
         ['clear', 'wipe the terminal'],
       ];
       let html = '<div class="output-line neon-line">Available commands:</div>';
@@ -326,20 +402,6 @@ import { portfolio } from '../data/portfolio';
       appendBlock(`<div class="output-line">${skillsHtml}</div>`);
     },
 
-    systemctl: () => {
-      let html = '<div class="output-line dim-line">UNIT                       STATUS</div>';
-      html += '<div class="output-line dim-line">──────────────────────────────────────────</div>';
-      for (const svc of portfolio.services) {
-        const statusText = svc.detail ? `${svc.status} [${svc.detail}]` : svc.status;
-        const sinceText = svc.since ? ` since ${svc.since}` : '';
-        const paddedName = svc.name.padEnd(27);
-        html += `<div class="output-line"><span class="blue-line">${escapeHtml(paddedName)}</span> <span class="neon-line">${escapeHtml(statusText)}</span><span class="dim-line">${escapeHtml(sinceText)}</span></div>`;
-      }
-      html += '<div class="output-line dim-line">──────────────────────────────────────────</div>';
-      html += '<div class="output-line dim-line">2 loaded units listed.</div>';
-      appendBlock(html);
-    },
-
     curl: () => {
       const json = JSON.stringify(portfolio, null, 2);
       appendBlock(`
@@ -372,17 +434,53 @@ import { portfolio } from '../data/portfolio';
       appendLine('guest — limited access. Try \'about\' for the real deal.', 'dim-line');
     },
 
-    ls: () => {
-      appendBlock(`
-        <div class="output-line dim-line">about/   experience/   skills/   systemctl/</div>
-        <div class="output-line dim-line">curl/    links/       clear/    help/</div>
-        <div class="output-line">&nbsp;</div>
-        <div class="output-line dim-line">(just kidding, this isn't a filesystem. try 'help'.)</div>
-      `);
+    ls: (args: string[]) => {
+      let targetPath = cwd;
+      if (args.length > 0 && args[0] !== '.' && args[0] !== './') {
+        if (args[0] === '..' || args[0] === '../') {
+          targetPath = cwd.slice(0, -1);
+        } else {
+          targetPath = [...cwd, args[0].replace(/\/$/, '')];
+        }
+      }
+      const node = getDir(targetPath);
+      if (!node || !node.children) {
+        appendLine(`ls: cannot access '${args[0] || ''}': No such file or directory`, 'err-line');
+        return;
+      }
+      const entries = Object.entries(node.children);
+      if (entries.length === 0) {
+        appendLine('', 'dim-line');
+        return;
+      }
+      const parts = entries.map(([name, child]) => {
+        const cls = child.type === 'dir' ? 'blue-line' : 'dim-line';
+        const suffix = child.type === 'dir' ? '/' : '';
+        return `<span class="${cls}">${name}${suffix}</span>`;
+      });
+      appendBlock(`<div class="output-line">${parts.join('   ')}</div>`);
     },
 
-    cat: () => {
-      appendLine('Meow. Just kidding — try \'curl\' for structured data.', 'dim-line');
+    cat: (args: string[]) => {
+      if (args.length === 0) {
+        appendLine('Meow. Just kidding — try \'cat <file>\' to read something.', 'dim-line');
+        return;
+      }
+      const target = args[0];
+      const dir = getDir(cwd);
+      if (!dir?.children?.[target]) {
+        appendLine(`cat: ${target}: No such file or directory`, 'err-line');
+        return;
+      }
+      const node = dir.children[target];
+      if (node.type === 'dir') {
+        appendLine(`cat: ${target}: Is a directory`, 'err-line');
+        return;
+      }
+      const lines = (node.content || '').split('\n');
+      for (const line of lines) {
+        appendLine(line, '');
+      }
     },
 
     vim: () => {
@@ -397,8 +495,40 @@ import { portfolio } from '../data/portfolio';
       appendLine('You can\'t escape that easily. This is your home now.', 'err-line');
     },
 
-    cd: () => {
-      appendLine('There\'s nowhere to go. You\'re already home.', 'dim-line');
+    cd: (args: string[]) => {
+      if (args.length === 0 || args[0] === '~' || args[0] === '/') {
+        cwd = [];
+        updatePrompt();
+        return;
+      }
+      const target = args[0].replace(/\/$/, '');
+      if (target === '.') {
+        return;
+      }
+      if (target === '..') {
+        if (cwd.length > 0) {
+          cwd.pop();
+          updatePrompt();
+        }
+        return;
+      }
+      let targetPath: string[];
+      if (target.startsWith('/')) {
+        targetPath = target.split('/').filter(Boolean);
+      } else {
+        targetPath = [...cwd, ...target.split('/').filter(Boolean)];
+      }
+      const node = getDir(targetPath);
+      if (!node) {
+        appendLine(`cd: no such file or directory: ${args[0]}`, 'err-line');
+        return;
+      }
+      if (node.type !== 'dir') {
+        appendLine(`cd: not a directory: ${args[0]}`, 'err-line');
+        return;
+      }
+      cwd = targetPath;
+      updatePrompt();
     },
 
     echo: (args: string[]) => {
@@ -502,12 +632,36 @@ import { portfolio } from '../data/portfolio';
       e.preventDefault();
       const current = input.value.trim().toLowerCase();
       if (current === '') return;
-      const matches = commandNames.filter((c) => c.startsWith(current));
-      if (matches.length === 1) {
-        input.value = matches[0] + ' ';
-      } else if (matches.length > 1) {
-        appendEcho(input.value);
-        appendLine(matches.join('  '), 'dim-line');
+      const parts = current.split(/\s+/);
+      if (parts.length === 1) {
+        const matches = commandNames.filter((c) => c.startsWith(parts[0]));
+        if (matches.length === 1) {
+          input.value = matches[0] + ' ';
+        } else if (matches.length > 1) {
+          appendEcho(input.value);
+          appendLine(matches.join('  '), 'dim-line');
+        }
+      } else {
+        const cmdName = parts[0];
+        const partial = parts.slice(1).join(' ') || '';
+        if (cmdName === 'cd' || cmdName === 'ls' || cmdName === 'cat') {
+          const dir = getDir(cwd);
+          if (!dir?.children) return;
+          const allEntries = Object.entries(dir.children);
+          const pool = cmdName === 'cd'
+            ? allEntries.filter(([, n]) => n.type === 'dir')
+            : allEntries;
+          const matches = pool
+            .map(([name]) => name)
+            .filter((name) => name.startsWith(partial));
+          if (matches.length === 1) {
+            const suffix = cmdName === 'cat' ? '' : (dir.children![matches[0]].type === 'dir' ? '/' : '');
+            input.value = `${cmdName} ${matches[0]}${suffix} `;
+          } else if (matches.length > 1) {
+            appendEcho(input.value);
+            appendLine(matches.join('  '), 'dim-line');
+          }
+        }
       }
     } else if (e.key === 'l' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
@@ -548,7 +702,7 @@ import { portfolio } from '../data/portfolio';
     appendLine('  SRE & DevOps Engineer | Infrastructure | Cloud Native', 'blue-line');
     appendLine('', '');
     appendLine("  Type 'help' to see what I can do.", 'neon-line');
-    appendLine("  Or just start typing \u2014 I don't bite.", 'dim-line');
+    appendLine("  Try 'ls' to browse the filesystem, 'cd <dir>' to explore.", 'dim-line');
     appendLine('', '');
     scrollToBottom();
     input.focus();

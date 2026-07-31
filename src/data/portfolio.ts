@@ -26,10 +26,6 @@ export const portfolio = {
     'Python',
     'Bash',
   ],
-  services: [
-    { name: 'uptime_agent.service', status: 'Active (Running)', since: '2021' },
-    { name: 'load_balancer_core', status: 'Healthy', detail: 'Traffic Status: Nominal' },
-  ],
   socials: {
     github: 'https://github.com/balaganesh-g',
     linkedin: 'https://www.linkedin.com/in/balaganesh-g',
