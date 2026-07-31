@@ -360,7 +360,7 @@ import { portfolio } from '../data/portfolio';
         ['about', 'who am I?'],
         ['experience', 'work history & achievements'],
         ['skills', 'tech stack I work with'],
-        ['curl', 'fetch career profile as JSON'],
+        ['curl', 'fetch a URL (or own profile as JSON)'],
         ['links', 'where to find me online'],
         ['ls', 'list files & directories'],
         ['cd', 'change directory'],
@@ -402,14 +402,72 @@ import { portfolio } from '../data/portfolio';
       appendBlock(`<div class="output-line">${skillsHtml}</div>`);
     },
 
-    curl: () => {
-      const json = JSON.stringify(portfolio, null, 2);
-      appendBlock(`
-        <div class="output-line dim-line">HTTP/2 200 OK</div>
-        <div class="output-line dim-line">Content-Type: application/json</div>
-        <div class="output-line">&nbsp;</div>
-        <div class="json-block">${syntaxHighlightJson(json)}</div>
-      `);
+    curl: (args: string[]) => {
+      if (args.length === 0) {
+        const json = JSON.stringify(portfolio, null, 2);
+        appendBlock(`
+          <div class="output-line dim-line">HTTP/2 200 OK</div>
+          <div class="output-line dim-line">Content-Type: application/json</div>
+          <div class="output-line">&nbsp;</div>
+          <div class="json-block">${syntaxHighlightJson(json)}</div>
+        `);
+        return;
+      }
+
+      let rawUrl = args[0];
+      let headOnly = false;
+
+      if (rawUrl === '-I' || rawUrl === '--head') {
+        headOnly = true;
+        args = args.slice(1);
+        if (args.length === 0) {
+          appendLine('curl: try \'curl -I <url>\'', 'err-line');
+          return;
+        }
+        rawUrl = args[0];
+      }
+
+      if (!rawUrl.startsWith('http://') && !rawUrl.startsWith('https://')) {
+        rawUrl = 'https://' + rawUrl;
+      }
+
+      const proxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(rawUrl)}`;
+
+      appendLine(`curl: requesting ${rawUrl} ...`, 'dim-line');
+
+      fetch(proxyUrl)
+        .then((res) => {
+          let headerHtml = `<div class="output-line neon-line">HTTP/${res.status === 200 ? '2' : '1.1'} ${res.status} ${res.statusText}</div>`;
+          res.headers.forEach((value, key) => {
+            headerHtml += `<div class="output-line dim-line">${escapeHtml(key)}: ${escapeHtml(value)}</div>`;
+          });
+          headerHtml += '<div class="output-line">&nbsp;</div>';
+          appendBlock(headerHtml);
+          if (headOnly) return;
+          return res.text().then((body) => {
+            const contentType = res.headers.get('content-type') || '';
+            if (contentType.includes('application/json')) {
+              try {
+                const formatted = JSON.stringify(JSON.parse(body), null, 2);
+                appendBlock(`<div class="json-block">${syntaxHighlightJson(formatted)}</div>`);
+                return;
+              } catch {
+              }
+            }
+            const truncated = body.length > 5000 ? body.slice(0, 5000) + '\n... (truncated)' : body;
+            const lines = truncated.split('\n');
+            for (const line of lines) {
+              appendLine(line, '');
+            }
+          });
+        })
+        .catch((err) => {
+          appendLine('', '');
+          appendLine('curl: (6) Could not resolve host / request blocked.', 'err-line');
+          appendLine(`curl: ${err.message}`, 'err-line');
+          appendLine('curl: hint: browsers block cross-origin requests (CORS).', 'dim-line');
+          appendLine('curl: hint: try a CORS-friendly endpoint like api.github.com.', 'dim-line');
+        });
     },
 
     links: () => {
