@@ -1,0 +1,558 @@
+---
+import { portfolio } from '../data/portfolio';
+---
+
+<div class="terminal-window" id="terminal">
+  <div class="window-bar">
+    <div class="dots">
+      <span class="dot dot-red"></span>
+      <span class="dot dot-yellow"></span>
+      <span class="dot dot-green"></span>
+    </div>
+    <div class="bar-title">guest@sre-portfolio: ~</div>
+    <div class="bar-spacer"></div>
+  </div>
+  <div class="terminal-body" id="terminal-body">
+    <div id="output-stream"></div>
+    <div class="input-line" id="input-line">
+      <span class="prompt">guest@sre-portfolio:~$</span>
+      <input
+        type="text"
+        id="command-input"
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false"
+        autofocus
+      />
+    </div>
+  </div>
+</div>
+
+<script type="application/json" id="portfolio-data" is:inline set:html={JSON.stringify(portfolio).replace(/</g, '\\u003c')} />
+
+<style is:global>
+  .terminal-window {
+    width: 100%;
+    max-width: 820px;
+    min-height: 480px;
+    max-height: 88vh;
+    background: var(--bg);
+    border: 1px solid var(--bg-border);
+    border-radius: 10px;
+    box-shadow:
+      0 0 0 1px rgba(57, 255, 20, 0.04),
+      0 0 40px rgba(57, 255, 20, 0.03),
+      0 12px 40px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .window-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 16px;
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--bg-border);
+    flex-shrink: 0;
+  }
+
+  .dots {
+    display: flex;
+    gap: 7px;
+  }
+
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    cursor: default;
+  }
+
+  .dot-red { background: #ff5f56; }
+  .dot-yellow { background: #ffbd2e; }
+  .dot-green { background: #27c93f; }
+
+  .bar-title {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    flex: 1;
+    text-align: center;
+    letter-spacing: 0.02em;
+  }
+
+  .bar-spacer {
+    width: 53px;
+    flex-shrink: 0;
+  }
+
+  .terminal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px 20px;
+    font-size: 0.85rem;
+    line-height: 1.65;
+    cursor: text;
+  }
+
+  #output-stream {
+    margin-bottom: 2px;
+  }
+
+  .output-block {
+    margin-bottom: 6px;
+    animation: boot-fade 0.15s ease;
+  }
+
+  .output-line {
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .input-line {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .prompt {
+    color: var(--blue);
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  #command-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--neon);
+    font-family: var(--font);
+    font-size: inherit;
+    caret-color: var(--neon);
+    min-width: 0;
+  }
+
+  .cmd-echo .prompt { color: var(--blue); }
+  .cmd-echo .cmd-text { color: var(--neon); }
+
+  .ok-line { color: var(--green); }
+  .err-line { color: var(--red); }
+  .dim-line { color: var(--text-dim); }
+  .neon-line { color: var(--neon); }
+  .blue-line { color: var(--blue); }
+  .yellow-line { color: var(--yellow); }
+
+  .json-block {
+    color: var(--blue);
+    white-space: pre;
+    padding-left: 14px;
+    border-left: 2px solid var(--bg-border);
+    overflow-x: auto;
+  }
+
+  .json-key { color: var(--neon); }
+  .json-string { color: var(--blue); }
+  .json-num { color: var(--yellow); }
+
+  .banner {
+    color: var(--neon);
+    white-space: pre;
+    font-size: 0.72rem;
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+
+  .cmd-list-item {
+    display: flex;
+    gap: 10px;
+  }
+
+  .cmd-name {
+    color: var(--neon);
+    min-width: 100px;
+    display: inline-block;
+  }
+
+  .cmd-desc {
+    color: var(--text-dim);
+  }
+
+  @media (max-width: 640px) {
+    .terminal-window {
+      max-width: 100%;
+      max-height: 90vh;
+      border-radius: 6px;
+    }
+
+    .terminal-body {
+      padding: 14px 12px;
+      font-size: 0.78rem;
+    }
+
+    .bar-title {
+      font-size: 0.7rem;
+    }
+
+    .cmd-name {
+      min-width: 80px;
+    }
+  }
+</style>
+
+<script>
+  interface PortfolioData {
+    name: string;
+    role: string;
+    about: string;
+    experience: Array<{
+      company: string;
+      title: string;
+      period: string;
+      bullets: string[];
+    }>;
+    skills: string[];
+    services: Array<{
+      name: string;
+      status: string;
+      since?: string;
+      detail?: string;
+    }>;
+    socials: {
+      github: string;
+      linkedin: string;
+      email: string;
+    };
+  }
+
+  const dataEl = document.getElementById('portfolio-data');
+  const portfolio: PortfolioData = JSON.parse(dataEl?.textContent || '{}');
+
+  const output = document.getElementById('output-stream')!;
+  const input = document.getElementById('command-input') as HTMLInputElement;
+  const terminal = document.getElementById('terminal')!;
+  const terminalBody = document.getElementById('terminal-body')!;
+
+  const PROMPT = 'guest@sre-portfolio:~$';
+  let history: string[] = [];
+  let historyIndex = -1;
+  function scrollToBottom(): void {
+    terminalBody.scrollTop = terminalBody.scrollHeight;
+  }
+
+  function escapeHtml(str: string): string {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function appendLine(text: string, className = ''): void {
+    const div = document.createElement('div');
+    div.className = `output-line ${className}`.trim();
+    div.textContent = text;
+    const wrap = document.createElement('div');
+    wrap.className = 'output-block';
+    wrap.appendChild(div);
+    output.appendChild(wrap);
+    scrollToBottom();
+  }
+
+  function appendBlock(html: string): void {
+    const div = document.createElement('div');
+    div.className = 'output-block';
+    div.innerHTML = html;
+    output.appendChild(div);
+    scrollToBottom();
+  }
+
+  function appendEcho(cmd: string): void {
+    const div = document.createElement('div');
+    div.className = 'output-block cmd-echo';
+    div.innerHTML = `<span class="prompt">${PROMPT}</span> <span class="cmd-text">${escapeHtml(cmd)}</span>`;
+    output.appendChild(div);
+    scrollToBottom();
+  }
+
+  function syntaxHighlightJson(json: string): string {
+    return escapeHtml(json)
+      .replace(/("(\\u[\da-fA-F]{4}|\\[^u]|[^\\"])*")\s*:/g, '<span class="json-key">$1</span>:')
+      .replace(/:\s*("(\\u[\da-fA-F]{4}|\\[^u]|[^\\"])*")/g, ': <span class="json-string">$1</span>')
+      .replace(/:\s*(-?\d+\.?\d*)/g, ': <span class="json-num">$1</span>');
+  }
+
+  const commands: Record<string, (args: string[]) => void> = {
+    help: () => {
+      const items = [
+        ['about', 'who am I?'],
+        ['experience', 'work history & achievements'],
+        ['skills', 'tech stack I work with'],
+        ['systemctl', 'check service status'],
+        ['curl', 'fetch career profile as JSON'],
+        ['links', 'where to find me online'],
+        ['clear', 'wipe the terminal'],
+      ];
+      let html = '<div class="output-line neon-line">Available commands:</div>';
+      for (const [name, desc] of items) {
+        html += `<div class="cmd-list-item"><span class="cmd-name">${name}</span><span class="cmd-desc">${desc}</span></div>`;
+      }
+      html += '<div class="output-line dim-line">  --- easter eggs exist. try common shell commands. ---</div>';
+      appendBlock(html);
+    },
+
+    about: () => {
+      appendBlock(`
+        <div class="output-line neon-line">${escapeHtml(portfolio.name)}</div>
+        <div class="output-line blue-line">${escapeHtml(portfolio.role)}</div>
+        <div class="output-line">&nbsp;</div>
+        <div class="output-line">${escapeHtml(portfolio.about)}</div>
+      `);
+    },
+
+    experience: () => {
+      let html = '';
+      for (const exp of portfolio.experience) {
+        html += `<div class="output-line"><span class="neon-line">[${escapeHtml(exp.company)}]</span> - ${escapeHtml(exp.title)} <span class="dim-line">(${escapeHtml(exp.period)})</span></div>`;
+        for (const bullet of exp.bullets) {
+          html += `<div class="output-line">  <span class="blue-line">•</span> ${escapeHtml(bullet)}</div>`;
+        }
+      }
+      appendBlock(html);
+    },
+
+    skills: () => {
+      const skillsHtml = portfolio.skills
+        .map((s) => `<span class="neon-line">${escapeHtml(s)}</span>`)
+        .join('<span class="dim-line"> · </span>');
+      appendBlock(`<div class="output-line">${skillsHtml}</div>`);
+    },
+
+    systemctl: () => {
+      let html = '<div class="output-line dim-line">UNIT                       STATUS</div>';
+      html += '<div class="output-line dim-line">──────────────────────────────────────────</div>';
+      for (const svc of portfolio.services) {
+        const statusText = svc.detail ? `${svc.status} [${svc.detail}]` : svc.status;
+        const sinceText = svc.since ? ` since ${svc.since}` : '';
+        const paddedName = svc.name.padEnd(27);
+        html += `<div class="output-line"><span class="blue-line">${escapeHtml(paddedName)}</span> <span class="neon-line">${escapeHtml(statusText)}</span><span class="dim-line">${escapeHtml(sinceText)}</span></div>`;
+      }
+      html += '<div class="output-line dim-line">──────────────────────────────────────────</div>';
+      html += '<div class="output-line dim-line">2 loaded units listed.</div>';
+      appendBlock(html);
+    },
+
+    curl: () => {
+      const json = JSON.stringify(portfolio, null, 2);
+      appendBlock(`
+        <div class="output-line dim-line">HTTP/2 200 OK</div>
+        <div class="output-line dim-line">Content-Type: application/json</div>
+        <div class="output-line">&nbsp;</div>
+        <div class="json-block">${syntaxHighlightJson(json)}</div>
+      `);
+    },
+
+    links: () => {
+      const s = portfolio.socials;
+      appendBlock(`
+        <div class="output-line neon-line">Find me online:</div>
+        <div class="output-line">  <span class="blue-line">github</span>   ${escapeHtml(s.github)}</div>
+        <div class="output-line">  <span class="blue-line">linkedin</span> ${escapeHtml(s.linkedin)}</div>
+        <div class="output-line">  <span class="blue-line">email</span>    ${escapeHtml(s.email)}</div>
+      `);
+    },
+
+    clear: () => {
+      output.innerHTML = '';
+    },
+
+    sudo: () => {
+      appendLine('Permission denied: you are not root. Nice try though.', 'err-line');
+    },
+
+    whoami: () => {
+      appendLine('guest — limited access. Try \'about\' for the real deal.', 'dim-line');
+    },
+
+    ls: () => {
+      appendBlock(`
+        <div class="output-line dim-line">about/   experience/   skills/   systemctl/</div>
+        <div class="output-line dim-line">curl/    links/       clear/    help/</div>
+        <div class="output-line">&nbsp;</div>
+        <div class="output-line dim-line">(just kidding, this isn't a filesystem. try 'help'.)</div>
+      `);
+    },
+
+    cat: () => {
+      appendLine('Meow. Just kidding — try \'curl\' for structured data.', 'dim-line');
+    },
+
+    vim: () => {
+      appendLine('Good luck exiting that. Try \'help\' instead.', 'dim-line');
+    },
+
+    nano: () => {
+      appendLine('Seriously? In this economy? Try \'help\' instead.', 'dim-line');
+    },
+
+    exit: () => {
+      appendLine('You can\'t escape that easily. This is your home now.', 'err-line');
+    },
+
+    cd: () => {
+      appendLine('There\'s nowhere to go. You\'re already home.', 'dim-line');
+    },
+
+    echo: (args: string[]) => {
+      if (args.length === 0) {
+        appendLine('', '');
+      } else {
+        appendLine(args.join(' '));
+      }
+    },
+
+    ping: () => {
+      appendBlock(`
+        <div class="output-line">PING balaganesh.dev (10.0.0.1): 56 data bytes</div>
+        <div class="output-line">64 bytes from 10.0.0.1: icmp_seq=0 ttl=64 time=0.042 ms</div>
+        <div class="output-line neon-line">--- balaganesh.dev ping statistics ---</div>
+        <div class="output-line">1 packet transmitted, 1 received, <span class="neon-line">0% packet loss</span></div>
+      `);
+    },
+
+    date: () => {
+      appendLine(new Date().toString(), 'dim-line');
+    },
+
+    neofetch: () => {
+      appendBlock(`
+        <div class="output-line neon-line">       _nnnn_</div>
+        <div class="output-line neon-line">      dGGGGMMb</div>
+        <div class="output-line neon-line">     @p~qp~~qMb</div>
+        <div class="output-line neon-line">     M|@||@) M|</div>
+        <div class="output-line neon-line">     @,----.JM|</div>
+        <div class="output-line neon-line">    JS^\\__/  qKL</div>
+        <div class="output-line neon-line">   dZP        qKRb</div>
+        <div class="output-line neon-line">  dZP          qKKb</div>
+        <div class="output-line neon-line"> fZP            SMMb</div>
+        <div class="output-line neon-line"> HZM            MMMM</div>
+        <div class="output-line neon-line"> FqM            MMMM</div>
+        <div class="output-line dim-line"> __| //.        |\\ \\</div>
+        <div class="output-line dim-line"> \\___|//</div>
+        <div class="output-line">&nbsp;</div>
+        <div class="output-line blue-line">${escapeHtml(portfolio.name)}</div>
+        <div class="output-line dim-line">OS: SRE-Portfolio Linux x86_64</div>
+        <div class="output-line dim-line">Host: Terminal v2.1.0</div>
+        <div class="output-line dim-line">Kernel: 6.1.0-portfolio</div>
+        <div class="output-line dim-line">Uptime: since 2021</div>
+        <div class="output-line dim-line">Shell: bash 5.2.15</div>
+        <div class="output-line dim-line">Role: ${escapeHtml(portfolio.role)}</div>
+      `);
+    },
+  };
+
+  const commandNames = Object.keys(commands);
+
+  function processCommand(raw: string): void {
+    appendEcho(raw);
+
+    const trimmed = raw.trim();
+    if (trimmed === '') {
+      return;
+    }
+
+    const parts = trimmed.split(/\s+/);
+    const cmd = parts[0].toLowerCase();
+    const args = parts.slice(1);
+
+    history.push(trimmed);
+    historyIndex = history.length;
+
+    if (commands[cmd]) {
+      commands[cmd](args);
+    } else {
+      appendLine(`bash: command not found: ${cmd}. Type 'help' to view options.`, 'err-line');
+    }
+
+    scrollToBottom();
+  }
+
+  input.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      processCommand(input.value);
+      input.value = '';
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (history.length === 0) return;
+      if (historyIndex > 0) {
+        historyIndex--;
+      } else if (historyIndex === -1) {
+        historyIndex = history.length - 1;
+      }
+      input.value = history[historyIndex] || '';
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (historyIndex < history.length - 1) {
+        historyIndex++;
+        input.value = history[historyIndex] || '';
+      } else {
+        historyIndex = history.length;
+        input.value = '';
+      }
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      const current = input.value.trim().toLowerCase();
+      if (current === '') return;
+      const matches = commandNames.filter((c) => c.startsWith(current));
+      if (matches.length === 1) {
+        input.value = matches[0] + ' ';
+      } else if (matches.length > 1) {
+        appendEcho(input.value);
+        appendLine(matches.join('  '), 'dim-line');
+      }
+    } else if (e.key === 'l' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      output.innerHTML = '';
+    }
+  });
+
+  terminal.addEventListener('click', () => {
+    input.focus();
+  });
+
+  async function boot(): Promise<void> {
+    const bootLines: Array<{ text: string; delay: number; cls?: string }> = [
+      { text: '[ OK ] Initializing SRE portfolio kernel v2.1.0...', delay: 200 },
+      { text: '[ OK ] Loading user profile: balaganesh_g', delay: 250 },
+      { text: '[ OK ] Mounting /dev/career', delay: 180 },
+      { text: '[ OK ] Starting uptime_agent.service', delay: 220 },
+      { text: '[ OK ] System ready.', delay: 150 },
+    ];
+
+    for (const line of bootLines) {
+      appendLine(line.text, 'ok-line');
+      await new Promise((r) => setTimeout(r, line.delay));
+    }
+
+    appendLine('', '');
+    appendBlock(
+      [
+        '  ___  _           _        __   __   _       _     _       ',
+        ' | _ \\| |__  ___  (_)__ ___ \\ \\ / /  / |  ___| |_  | |__ ___',
+        ' |  _/| / _|| _ \\ | |\\ V /  \\ V /   | | / -_)  _| | / _(_-<',
+        ' |_|  |_\\__||___/ |_| |_|    \\_/    |_| \\___|\\__|_|_\\__/__/',
+      ]
+        .map((l) => `<div class="banner">${l}</div>`)
+        .join(''),
+    );
+    appendLine('', '');
+    appendLine('  SRE & DevOps Engineer | Infrastructure | Cloud Native', 'blue-line');
+    appendLine('', '');
+    appendLine("  Type 'help' to see what I can do.", 'neon-line');
+    appendLine("  Or just start typing \u2014 I don't bite.", 'dim-line');
+    appendLine('', '');
+    scrollToBottom();
+    input.focus();
+  }
+
+  boot();
+</script>
