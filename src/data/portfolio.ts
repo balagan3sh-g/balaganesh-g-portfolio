@@ -27,8 +27,8 @@ export const portfolio = {
     'Bash',
   ],
   socials: {
-    github: 'https://github.com/balaganesh-g',
-    linkedin: 'https://www.linkedin.com/in/balaganesh-g',
-    email: 'mailto:balaganesh.g.dev@gmail.com',
+    github: 'https://github.com/balagan3sh-g',
+    linkedin: 'https://www.linkedin.com/in/balagan3sh-g',
+    email: 'mailto:balagan3sh.g.dev@gmail.com',
   },
 };

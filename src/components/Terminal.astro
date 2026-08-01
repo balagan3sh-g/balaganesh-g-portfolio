@@ -160,9 +160,10 @@ import { portfolio } from '../data/portfolio';
   .banner {
     color: var(--neon);
     white-space: pre;
-    font-size: 0.72rem;
-    line-height: 1.2;
-    margin-bottom: 4px;
+    font-size: 0.42rem;
+    line-height: 1.15;
+    margin-bottom: 0;
+    letter-spacing: -0.02em;
   }
 
   .cmd-list-item {
@@ -665,9 +666,9 @@ import { portfolio } from '../data/portfolio';
 
     ping: () => {
       appendBlock(`
-        <div class="output-line">PING balaganesh.dev (10.0.0.1): 56 data bytes</div>
+        <div class="output-line">PING balagan3sh_g.dev (10.0.0.1): 56 data bytes</div>
         <div class="output-line">64 bytes from 10.0.0.1: icmp_seq=0 ttl=64 time=0.042 ms</div>
-        <div class="output-line neon-line">--- balaganesh.dev ping statistics ---</div>
+        <div class="output-line neon-line">--- balagan3sh_g.dev ping statistics ---</div>
         <div class="output-line">1 packet transmitted, 1 received, <span class="neon-line">0% packet loss</span></div>
       `);
     },
@@ -800,7 +801,7 @@ import { portfolio } from '../data/portfolio';
   async function boot(): Promise<void> {
     const bootLines: Array<{ text: string; delay: number; cls?: string }> = [
       { text: '[ OK ] Initializing SRE portfolio kernel v2.1.0...', delay: 200 },
-      { text: '[ OK ] Loading user profile: balaganesh_g', delay: 250 },
+      { text: '[ OK ] Loading user profile: balagan3sh_g', delay: 250 },
       { text: '[ OK ] Mounting /dev/career', delay: 180 },
       { text: '[ OK ] Starting uptime_agent.service', delay: 220 },
       { text: '[ OK ] System ready.', delay: 150 },
@@ -814,10 +815,15 @@ import { portfolio } from '../data/portfolio';
     appendLine('', '');
     appendBlock(
       [
-        '  ___  _           _        __   __   _       _     _       ',
-        ' | _ \\| |__  ___  (_)__ ___ \\ \\ / /  / |  ___| |_  | |__ ___',
-        ' |  _/| / _|| _ \\ | |\\ V /  \\ V /   | | / -_)  _| | / _(_-<',
-        ' |_|  |_\\__||___/ |_| |_|    \\_/    |_| \\___|\\__|_|_\\__/__/',
+        '░██                   ░██                                              ░██████             ░██                               ',
+        '░██                   ░██                                             ░██   ░██            ░██                               ',
+        '░████████   ░██████   ░██  ░██████    ░████████  ░██████   ░████████        ░██  ░███████  ░████████               ░████████ ',
+        '░██    ░██       ░██  ░██       ░██  ░██    ░██       ░██  ░██    ░██   ░█████  ░██        ░██    ░██             ░██    ░██ ',
+        '░██    ░██  ░███████  ░██  ░███████  ░██    ░██  ░███████  ░██    ░██       ░██  ░███████  ░██    ░██             ░██    ░██ ',
+        '░███   ░██ ░██   ░██  ░██ ░██   ░██  ░██   ░███ ░██   ░██  ░██    ░██ ░██   ░██        ░██ ░██    ░██             ░██   ░███ ',
+        '░██░█████   ░█████░██ ░██  ░█████░██  ░█████░██  ░█████░██ ░██    ░██  ░██████   ░███████  ░██    ░██ ░██████████  ░█████░██ ',
+        '                                            ░██                                                                          ░██ ',
+        '                                      ░███████                                                                     ░███████ ',
       ]
         .map((l) => `<div class="banner">${l}</div>`)
         .join(''),
