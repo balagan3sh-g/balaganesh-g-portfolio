@@ -31,4 +31,7 @@ export const portfolio = {
     linkedin: 'https://www.linkedin.com/in/balagan3sh-g',
     email: 'mailto:balagan3sh.g.dev@gmail.com',
   },
+  resume: {
+    filename: 'balagan3sh_g_resume.pdf',
+  },
 };

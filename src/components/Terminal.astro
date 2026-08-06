@@ -220,6 +220,9 @@ import { portfolio } from '../data/portfolio';
       linkedin: string;
       email: string;
     };
+    resume: {
+      filename: string;
+    };
   }
 
   const dataEl = document.getElementById('portfolio-data');
@@ -355,6 +358,18 @@ import { portfolio } from '../data/portfolio';
       .replace(/:\s*(-?\d+\.?\d*)/g, ': <span class="json-num">$1</span>');
   }
 
+  function downloadResume(filename: string): void {
+    const base = import.meta.env.BASE_URL || '/';
+    const url = `${base}resume/${filename}`;
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    appendLine(`Downloaded ${filename}`, 'neon-line');
+  }
+
   const commands: Record<string, (args: string[]) => void> = {
     help: () => {
       const items = [
@@ -363,6 +378,7 @@ import { portfolio } from '../data/portfolio';
         ['skills', 'tech stack I work with'],
         ['curl', 'fetch a URL'],
         ['links', 'where to find me online'],
+        ['resume', 'download my resume'],
         ['ls', 'list files & directories'],
         ['cd', 'change directory'],
         ['cat', 'read a file'],
@@ -545,6 +561,10 @@ import { portfolio } from '../data/portfolio';
         <div class="output-line">  <span class="blue-line">linkedin</span> ${escapeHtml(s.linkedin)}</div>
         <div class="output-line">  <span class="blue-line">email</span>    ${escapeHtml(s.email)}</div>
       `);
+    },
+
+    resume: () => {
+      downloadResume(portfolio.resume.filename);
     },
 
     clear: () => {
