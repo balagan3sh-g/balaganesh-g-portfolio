@@ -181,6 +181,19 @@ import { portfolio } from '../data/portfolio';
     color: var(--text-dim);
   }
 
+  .link {
+    color: var(--blue);
+    text-decoration: underline;
+    text-decoration-color: var(--bg-border);
+    text-underline-offset: 2px;
+    transition: color 0.15s ease, text-decoration-color 0.15s ease;
+  }
+
+  .link:hover {
+    color: var(--neon);
+    text-decoration-color: var(--neon);
+  }
+
   @media (max-width: 640px) {
     .terminal-window {
       max-width: 100%;
@@ -212,9 +225,16 @@ import { portfolio } from '../data/portfolio';
       company: string;
       title: string;
       period: string;
+      location?: string;
       bullets: string[];
     }>;
     skills: string[];
+    education?: Array<{
+      institution: string;
+      degree: string;
+      period: string;
+      detail?: string;
+    }>;
     socials: {
       github: string;
       linkedin: string;
@@ -244,16 +264,23 @@ import { portfolio } from '../data/portfolio';
   }
 
   function buildVFS(data: PortfolioData): Record<string, VFSNode> {
-    const expText = data.experience
-      .map(
-        (exp) =>
-          `[${exp.company}] - ${exp.title} (${exp.period})\n${exp.bullets.map((b) => `  - ${b}`).join('\n')}`,
-      )
-      .join('\n\n');
+    const sreIIExp = data.experience[0];
+    const sreIExp = data.experience[1];
+    const internExp = data.experience[2];
+
+    const sreIIText = `[${sreIIExp.company}] - ${sreIIExp.title} (${sreIIExp.period})\n${sreIIExp.location || ''}\n\n${sreIIExp.bullets.map((b) => `  - ${b}`).join('\n')}`;
+    const sreIText = `[${sreIExp.company}] - ${sreIExp.title} (${sreIExp.period})\n${sreIExp.location || ''}\n\n${sreIExp.bullets.map((b) => `  - ${b}`).join('\n')}`;
+    const internText = `[${internExp.company}] - ${internExp.title} (${internExp.period})\n${internExp.location || ''}\n\n${internExp.bullets.map((b) => `  - ${b}`).join('\n')}`;
 
     const skillsText = data.skills.join(' · ');
 
-    const linksText = `github:   ${data.socials.github}\nlinkedin: ${data.socials.linkedin}\nemail:    ${data.socials.email}`;
+    const contactText = `github:   ${data.socials.github}\nlinkedin: ${data.socials.linkedin}\nemail:    ${data.socials.email}`.trim();
+
+    const eduText = data.education
+      ? data.education
+          .map((e) => `${e.institution}\n${e.degree} (${e.period})\n${e.detail || ''}`.trim())
+          .join('\n\n')
+      : '';
 
     return {
       about: {
@@ -268,7 +295,9 @@ import { portfolio } from '../data/portfolio';
       experience: {
         type: 'dir',
         children: {
-          'juspay.txt': { type: 'file', content: expText },
+          'juspay-sre-ii.txt': { type: 'file', content: sreIIText },
+          'juspay-sre-i.txt': { type: 'file', content: sreIText },
+          'juspay-intern.txt': { type: 'file', content: internText },
         },
       },
       skills: {
@@ -280,9 +309,17 @@ import { portfolio } from '../data/portfolio';
       links: {
         type: 'dir',
         children: {
-          'contact.txt': { type: 'file', content: linksText },
+          'contact.txt': { type: 'file', content: contactText },
         },
       },
+      ...(eduText && {
+        education: {
+          type: 'dir' as const,
+          children: {
+            'degree.txt': { type: 'file' as const, content: eduText },
+          },
+        },
+      }),
       'profile.json': {
         type: 'file',
         content: JSON.stringify(data, null, 2),
@@ -375,9 +412,10 @@ import { portfolio } from '../data/portfolio';
       const items = [
         ['about', 'who am I?'],
         ['experience', 'work history & achievements'],
-        ['skills', 'tech stack I work with'],
+        ['skills', 'tech stack & tools'],
+        ['education', 'academic background'],
         ['curl', 'fetch a URL'],
-        ['links', 'where to find me online'],
+        ['links', 'where to find me'],
         ['resume', 'download my resume'],
         ['ls', 'list files & directories'],
         ['cd', 'change directory'],
@@ -398,13 +436,19 @@ import { portfolio } from '../data/portfolio';
         <div class="output-line blue-line">${escapeHtml(portfolio.role)}</div>
         <div class="output-line">&nbsp;</div>
         <div class="output-line">${escapeHtml(portfolio.about)}</div>
+        <div class="output-line">&nbsp;</div>
+        <div class="output-line dim-line">Bengaluru, Karnataka &bull; <a href="${escapeHtml(portfolio.socials.email)}" class="link">${escapeHtml(portfolio.socials.email)}</a></div>
       `);
     },
 
     experience: () => {
       let html = '';
-      for (const exp of portfolio.experience) {
+      for (const [idx, exp] of portfolio.experience.entries()) {
+        if (idx > 0) html += '<div class="output-line">&nbsp;</div>';
         html += `<div class="output-line"><span class="neon-line">[${escapeHtml(exp.company)}]</span> - ${escapeHtml(exp.title)} <span class="dim-line">(${escapeHtml(exp.period)})</span></div>`;
+        if (exp.location) {
+          html += `<div class="output-line dim-line">  ${escapeHtml(exp.location)}</div>`;
+        }
         for (const bullet of exp.bullets) {
           html += `<div class="output-line">  <span class="blue-line">•</span> ${escapeHtml(bullet)}</div>`;
         }
@@ -557,10 +601,23 @@ import { portfolio } from '../data/portfolio';
       const s = portfolio.socials;
       appendBlock(`
         <div class="output-line neon-line">Find me online:</div>
-        <div class="output-line">  <span class="blue-line">github</span>   ${escapeHtml(s.github)}</div>
-        <div class="output-line">  <span class="blue-line">linkedin</span> ${escapeHtml(s.linkedin)}</div>
-        <div class="output-line">  <span class="blue-line">email</span>    ${escapeHtml(s.email)}</div>
+        <div class="output-line">  <span class="blue-line">github</span>   <a href="${escapeHtml(s.github)}" target="_blank" rel="noopener noreferrer" class="link">${escapeHtml(s.github)}</a></div>
+        <div class="output-line">  <span class="blue-line">linkedin</span> <a href="${escapeHtml(s.linkedin)}" target="_blank" rel="noopener noreferrer" class="link">${escapeHtml(s.linkedin)}</a></div>
+        <div class="output-line">  <span class="blue-line">email</span>    <a href="${escapeHtml(s.email)}" class="link">${escapeHtml(s.email)}</a></div>
       `);
+    },
+
+    education: () => {
+      if (!portfolio.education) return;
+      let html = '';
+      for (const edu of portfolio.education) {
+        html += `<div class="output-line"><span class="neon-line">${escapeHtml(edu.institution)}</span></div>`;
+        html += `<div class="output-line">  <span class="blue-line">${escapeHtml(edu.degree)}</span> <span class="dim-line">(${escapeHtml(edu.period)})</span></div>`;
+        if (edu.detail) {
+          html += `<div class="output-line dim-line">  ${escapeHtml(edu.detail)}</div>`;
+        }
+      }
+      appendBlock(html);
     },
 
     resume: () => {
@@ -849,7 +906,7 @@ import { portfolio } from '../data/portfolio';
         .join(''),
     );
     appendLine('', '');
-    appendLine('  SRE & DevOps Engineer | Infrastructure | Cloud Native', 'blue-line');
+    appendLine('  Site Reliability Engineer | Infrastructure | Cloud Native', 'blue-line');
     appendLine('', '');
     appendLine("  Type 'help' to see what I can do.", 'neon-line');
     appendLine("  Try 'ls' to browse the filesystem, 'cd <dir>' to explore.", 'dim-line');
