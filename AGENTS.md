@@ -30,8 +30,8 @@ src/
 
 ## Key Design Decisions
 - **Virtual Filesystem (VFS)**: `ls`, `cd`, `cat` work together on a fake filesystem built from portfolio data
-  - Directories: `about/`, `experience/`, `skills/`, `links/`
-  - Files: `bio.txt`, `juspay.txt`, `stack.txt`, `contact.txt`, `profile.json`, `readme.txt`
+  - Directories: `about/`, `experience/`, `skills/`, `links/`, `education/`
+  - Files: `bio.txt`, `juspay-sre-ii.txt`, `juspay-sre-i.txt`, `juspay-intern.txt`, `stack.txt`, `contact.txt`, `degree.txt`, `profile.json`, `readme.txt`
   - Tab completion is context-aware (suggests dirs for `cd`, files+dirs for `cat`/`ls`)
 - **`curl`**: Real HTTP requests via `fetch` through `https://corsproxy.io/?url=` proxy
   - Supports: `-h/--help`, `-V/--version`, `-I/--head`, `-s/--silent`, `-L/--location`, `-X/--request`, `-H/--header`, `-d/--data`, `-o/--output`
@@ -53,12 +53,14 @@ src/
 | `help` | Lists available commands |
 | `about` | Shows name, role, bio |
 | `experience` | Work history with bullet points |
-| `skills` | Tech stack list |
+| `skills` | Tech stack & tools |
 | `curl [url]` | Real HTTP fetch via corsproxy.io |
-| `links` | GitHub, LinkedIn, Email |
+| `links` | GitHub, LinkedIn, Email (clickable) |
 | `ls [dir]` | List VFS contents |
 | `cd <dir>` | Navigate VFS directories |
 | `cat <file>` | Read VFS file contents (no args = "Meow" easter egg) |
+| `education` | Academic background |
+| `resume` | Download PDF resume |
 | `clear` | Wipe terminal |
 | `neofetch` | System info ASCII art |
 | `ping` | Fake ping to balagan3sh_g.dev |
